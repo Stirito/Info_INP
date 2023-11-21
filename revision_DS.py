@@ -62,4 +62,4 @@ def Renverser(P:list,j:int):
         Empiler(P,Depiler(D))
     return P
 
-print(Renverser(P,3))
+
