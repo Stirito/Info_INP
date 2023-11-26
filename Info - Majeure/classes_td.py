@@ -79,23 +79,32 @@ class Joueur:
         d = self.TrouverMeilleur(self.jouables)
         for i in range(self.jouables.count(d)):
           domino_strategie_A.append(d)
-          
-      return domino_strategie_A[randint(0,len(domino_strategie_A)-1)]
+      
+        print("domino_strategie_A",domino_strategie_A)
+        print(len(domino_strategie_A)-1)
+        return domino_strategie_A[randint(0,len(domino_strategie_A)-1)]
+      else:
+        return None
+      
     elif self.strategie == "B":
       self.TrouverJouables(n1,n2)
       if self.jouables != []:
         return self.jouables[randint(0,len(self.jouables)-1)]
-    
+      else:
+        return None
     elif self.strategie == "C":
       self.TrouverJouables(n1,n2)
       if self.jouables != []:
         is_enough = True
+        Z = self.Analyser()
+        print(Z)
         for valeur,nb in self.Analyser().items():
           if nb < 1:
             is_enough = False
         if is_enough:
           return self.jouables[randint(0,len(self.jouables)-1)]
-        
+        else:
+          return None
       
     
     elif self.strategie == "D":
@@ -107,7 +116,8 @@ class Joueur:
         self.TrouverJouables(n1,n2)
         if self.jouables != []:
           return self.TrouverMeilleur(self.jouables)
-
+        else:
+          return None
 class Joueurs:
   def __init__(self,N):
     if 2 <= int(N) <= 4:
@@ -133,30 +143,37 @@ class Joueurs:
         print("Il a le domino ",domino.Afficher())
         
         return domino
-  #! A revoir Problème sur self.tour str alors qu'il doit etre un joueur#
+ 
   
   def PasserTour(self):
+    print("Le joueur ",self.tour.nom," passe son tour")
     if (self.listejoueurs.index(self.tour)+1) < self.N:
       prochain = self.listejoueurs.index(self.tour)+1
     else:
       prochain = 0
     self.tour = self.listejoueurs[prochain]
-    
+  #TODO : Boucle infini (Si tous les joueurs sont C et qu'il n'y a pas de double)
   def TrouverMeilleurMain(self,n1,n2):
     j = 0
     K = {}
     for joueur in self.listejoueurs:
-      joueur.TrouverJouables(n1,n2)
+      joueur.jouables = []
+      domino = joueur.Choisir(n1,n2)
       
-      if joueur.main != [] and joueur.jouables != []:
+      print(joueur.AfficherMain(),domino)
+      if joueur.main != [] and domino == None:
         j+=1
         K[joueur]= joueur.ValeurMain()
     
-    print("K",K)
+      
+   
     
     blocage = j == self.N
     
     if blocage:
+      print("Blocage")
+      for joueur in self.listejoueurs:
+        print(joueur.nom,joueur.AfficherMain(),joueur.jouables)
       for joueur,valeur in K.items():
         if valeur == min(K.values()):
           return joueur
@@ -170,9 +187,45 @@ class JeuDeDominos:
     self.plateau = []
   
   #! A revoir Problème sur self.tour str alors qu'il doit etre un joueur#
+  #TODO : Probleme quand on rajoute au debut extrelite n1 a revoir
   def PoserPlateau(self,domino):
-    self.plateau.append(domino)
-    self.joueurs.tour.main.remove(domino)
+    print("on pose ",domino.Afficher())
+    
+    if self.plateau != []:  
+      premier_domino = self.plateau[0]
+      dernier_domino = self.plateau[len(self.plateau)-1]
+      if premier_domino.A == domino.B:
+        self.plateau.insert(0,domino)
+        self.joueurs.tour.main.remove(domino)
+      elif premier_domino.A == domino.A:
+        d = domino
+        domino = domino.Retourner()
+        self.plateau.insert(0,domino)
+        p = [domino.Afficher() for domino in self.plateau]
+        print("plateauuuuu",p)
+        print("domino",domino)
+        self.joueurs.tour.main.remove(d)
+       
+      elif dernier_domino.B == domino.A:
+        self.plateau.append(domino)
+        self.joueurs.tour.main.remove(domino)
+      elif dernier_domino.B == domino.B:
+        d = domino
+        domino_r = domino.Retourner()
+        self.plateau.append(domino_r)
+        p = [domino.Afficher() for domino in self.plateau]
+        print("plateauuuuu",p)
+        self.joueurs.tour.main.remove(d)
+      
+    else:
+      self.plateau.append(domino)
+      self.joueurs.tour.main.remove(domino)
+      
+      
+    
+    p = [domino.Afficher() for domino in self.plateau]
+    print("plateau",p)
+    
     
   #! Passer tour 
   def FaireJouer(self,n1,n2):
@@ -180,7 +233,9 @@ class JeuDeDominos:
     print(self.joueurs.tour.AfficherMain())
     if domino != None:
       print("Le joueur ",self.joueurs.tour.nom," joue le domino ",domino.Afficher())
+      
       self.PoserPlateau(domino)
+      self.joueurs.PasserTour()
     else:
       self.joueurs.PasserTour()
   def Distribuer(self):
@@ -202,11 +257,14 @@ class JeuDeDominos:
   def PartieFinie(self,n1,n2):
     for joueur in self.joueurs.listejoueurs:
       if joueur.main == []:
-        
+        print("Le joueur ",joueur.nom,"n'a plus de dominos")
+        self.DesignerVainqueur(joueur)
         return True
-      
-    if self.joueurs.TrouverMeilleurMain(n1,n2):
-      print("ftftftf")
+    
+    j = self.joueurs.TrouverMeilleurMain(n1,n2)
+    if j != None:
+      print(j.nom," a la meilleure main")
+      self.DesignerVainqueur(j)
       return True
     else:
       return False
@@ -224,17 +282,18 @@ class JeuDeDominos:
     n2 = first_domino.B
 
     self.PoserPlateau(first_domino)
-    
-    p = [domino.Afficher() for domino in self.plateau]
-    print(p)
+    self.joueurs.PasserTour()
+ 
     
     while self.PartieFinie(n1,n2) == False:
       
+      print("n1/n2",n1,n2)
       self.FaireJouer(n1,n2)
-      domino_pose = self.plateau[len(self.plateau)-1]
-      n1 = domino_pose.A
-      n2 = domino_pose.B
-    
+      premier_domino = self.plateau[0]
+      dernier_domino = self.plateau[len(self.plateau)-1]
+      n1 = premier_domino.A
+      n2 = dernier_domino.B
+    print("Le vainqueur est ",self.joueurs.Vainqueur.nom)
 J = JeuDeDominos()
 
 J.LancerPartie()
