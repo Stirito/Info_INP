@@ -296,6 +296,7 @@ class JeuDeDominos:
 def Probabilité_Gagnant(n):
   V = []
   for i in range(n):
+    print(i)
     jeu = JeuDeDominos()
     jeu.LancerPartie()
     V.append(jeu.joueurs.Vainqueur.strategie)
@@ -304,7 +305,7 @@ def Probabilité_Gagnant(n):
   print(V.count("C")/len(V))
   print(V.count("D")/len(V))
 
-Probabilité_Gagnant(10000)
+Probabilité_Gagnant(100000)
 
   
    
