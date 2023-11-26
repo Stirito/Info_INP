@@ -69,7 +69,7 @@ class Joueur:
       for domino,valeur in L.items():
         if valeur == m:
           return domino
-    return Domino(0,0)
+    return None
   
   def Choisir(self,n1,n2):
     domino_strategie_A = []
@@ -126,20 +126,24 @@ class Joueurs:
     self.tour = Joueur(["A","B","C","D"][randint(0,3)])
     self.Vainqueur = None
   def CommencerPartie(self):
-    toutes_les_mains = {}
+    p1 = {}
     for joueur in self.listejoueurs:
-      doubles = joueur.TrouverDoubles()
-    
-      toutes_les_mains[joueur]= joueur.TrouverMeilleur(doubles)
-    m = max([d.Valeur() for d in toutes_les_mains.values()])
-    
-    for joueur,domino in toutes_les_mains.items():
-      if domino.Valeur() == m:
-        self.tour = joueur
-       
+          domino_random = joueur.main[randint(0,len(joueur.main)-1)]
         
-        return domino
- 
+          p1[joueur] = domino_random
+    max_p1 = max([d.Valeur() for d in p1.values()])
+    for joueur,domino in p1.items():
+      if domino.Valeur() == max_p1:
+        
+        self.tour = joueur
+    
+    double = self.tour.TrouverDoubles()
+    if double != []:
+      return self.tour.TrouverMeilleur(double)
+    else:
+      print(self.tour.AfficherMain())
+      return self.tour.main[randint(0,len(self.tour.main)-1)]
+      
   
   def PasserTour(self):
     
@@ -288,13 +292,19 @@ class JeuDeDominos:
       n2 = dernier_domino.B
     print("Le vainqueur est ",self.joueurs.Vainqueur.nom)
 
-V = []
-for i in range(100):
-  j = JeuDeDominos()
-  j.LancerPartie()
-  V.append(j.joueurs.Vainqueur.strategie)
 
-print(V.count("A")/len(V))
+def Probabilité_Gagnant(n):
+  V = []
+  for i in range(n):
+    jeu = JeuDeDominos()
+    jeu.LancerPartie()
+    V.append(jeu.joueurs.Vainqueur.strategie)
+  print(V.count("A")/len(V))
+  print(V.count("B")/len(V))
+  print(V.count("C")/len(V))
+  print(V.count("D")/len(V))
+
+Probabilité_Gagnant(10000)
 
   
    
