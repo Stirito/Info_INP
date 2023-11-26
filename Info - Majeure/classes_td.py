@@ -79,9 +79,7 @@ class Joueur:
         d = self.TrouverMeilleur(self.jouables)
         for i in range(self.jouables.count(d)):
           domino_strategie_A.append(d)
-      
-        print("domino_strategie_A",domino_strategie_A)
-        print(len(domino_strategie_A)-1)
+     
         return domino_strategie_A[randint(0,len(domino_strategie_A)-1)]
       else:
         return None
@@ -96,8 +94,7 @@ class Joueur:
       self.TrouverJouables(n1,n2)
       if self.jouables != []:
         is_enough = True
-        Z = self.Analyser()
-        print(Z)
+    
         for valeur,nb in self.Analyser().items():
           if nb < 1:
             is_enough = False
@@ -132,21 +129,20 @@ class Joueurs:
     toutes_les_mains = {}
     for joueur in self.listejoueurs:
       doubles = joueur.TrouverDoubles()
-      print(joueur.nom,joueur.Afficher(doubles))
+    
       toutes_les_mains[joueur]= joueur.TrouverMeilleur(doubles)
     m = max([d.Valeur() for d in toutes_les_mains.values()])
     
     for joueur,domino in toutes_les_mains.items():
       if domino.Valeur() == m:
         self.tour = joueur
-        print("Le joueur ",joueur.nom," commence")
-        print("Il a le domino ",domino.Afficher())
+       
         
         return domino
  
   
   def PasserTour(self):
-    print("Le joueur ",self.tour.nom," passe son tour")
+    
     if (self.listejoueurs.index(self.tour)+1) < self.N:
       prochain = self.listejoueurs.index(self.tour)+1
     else:
@@ -160,7 +156,7 @@ class Joueurs:
       joueur.jouables = []
       domino = joueur.Choisir(n1,n2)
       
-      print(joueur.AfficherMain(),domino)
+      
       if joueur.main != [] and domino == None:
         j+=1
         K[joueur]= joueur.ValeurMain()
@@ -171,9 +167,8 @@ class Joueurs:
     blocage = j == self.N
     
     if blocage:
-      print("Blocage")
-      for joueur in self.listejoueurs:
-        print(joueur.nom,joueur.AfficherMain(),joueur.jouables)
+     
+      
       for joueur,valeur in K.items():
         if valeur == min(K.values()):
           return joueur
@@ -189,7 +184,7 @@ class JeuDeDominos:
   #! A revoir Problème sur self.tour str alors qu'il doit etre un joueur#
   #TODO : Probleme quand on rajoute au debut extrelite n1 a revoir
   def PoserPlateau(self,domino):
-    print("on pose ",domino.Afficher())
+  
     
     if self.plateau != []:  
       premier_domino = self.plateau[0]
@@ -201,9 +196,8 @@ class JeuDeDominos:
         d = domino
         domino = domino.Retourner()
         self.plateau.insert(0,domino)
-        p = [domino.Afficher() for domino in self.plateau]
-        print("plateauuuuu",p)
-        print("domino",domino)
+      
+   
         self.joueurs.tour.main.remove(d)
        
       elif dernier_domino.B == domino.A:
@@ -214,7 +208,7 @@ class JeuDeDominos:
         domino_r = domino.Retourner()
         self.plateau.append(domino_r)
         p = [domino.Afficher() for domino in self.plateau]
-        print("plateauuuuu",p)
+
         self.joueurs.tour.main.remove(d)
       
     else:
@@ -223,16 +217,15 @@ class JeuDeDominos:
       
       
     
-    p = [domino.Afficher() for domino in self.plateau]
-    print("plateau",p)
+   
     
     
   #! Passer tour 
   def FaireJouer(self,n1,n2):
     domino = self.joueurs.tour.Choisir(n1,n2)
-    print(self.joueurs.tour.AfficherMain())
+    
     if domino != None:
-      print("Le joueur ",self.joueurs.tour.nom," joue le domino ",domino.Afficher())
+     
       
       self.PoserPlateau(domino)
       self.joueurs.PasserTour()
@@ -257,13 +250,13 @@ class JeuDeDominos:
   def PartieFinie(self,n1,n2):
     for joueur in self.joueurs.listejoueurs:
       if joueur.main == []:
-        print("Le joueur ",joueur.nom,"n'a plus de dominos")
+      
         self.DesignerVainqueur(joueur)
         return True
     
     j = self.joueurs.TrouverMeilleurMain(n1,n2)
     if j != None:
-      print(j.nom," a la meilleure main")
+      
       self.DesignerVainqueur(j)
       return True
     else:
@@ -287,16 +280,21 @@ class JeuDeDominos:
     
     while self.PartieFinie(n1,n2) == False:
       
-      print("n1/n2",n1,n2)
+  
       self.FaireJouer(n1,n2)
       premier_domino = self.plateau[0]
       dernier_domino = self.plateau[len(self.plateau)-1]
       n1 = premier_domino.A
       n2 = dernier_domino.B
     print("Le vainqueur est ",self.joueurs.Vainqueur.nom)
-J = JeuDeDominos()
 
-J.LancerPartie()
+V = []
+for i in range(100):
+  j = JeuDeDominos()
+  j.LancerPartie()
+  V.append(j.joueurs.Vainqueur.strategie)
+
+print(V.count("A")/len(V))
 
   
    
