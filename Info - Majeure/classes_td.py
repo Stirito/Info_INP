@@ -293,19 +293,36 @@ class JeuDeDominos:
     print("Le vainqueur est ",self.joueurs.Vainqueur.nom)
 
 
-def Probabilité_Gagnant(n):
-  V = []
-  for i in range(n):
-    print(i)
+def Probabilité_Gagnant_pourcentage(N):
+  A = 0
+  B = 0
+  C = 0
+  D = 0
+  for i in range(N):
     jeu = JeuDeDominos()
     jeu.LancerPartie()
-    V.append(jeu.joueurs.Vainqueur.strategie)
-  print(V.count("A")/len(V))
-  print(V.count("B")/len(V))
-  print(V.count("C")/len(V))
-  print(V.count("D")/len(V))
+    if jeu.joueurs.Vainqueur.strategie == "A":
+      A += 1
+    elif jeu.joueurs.Vainqueur.strategie == "B":
+      B += 1
+    elif jeu.joueurs.Vainqueur.strategie == "C":
+      C += 1
+    elif jeu.joueurs.Vainqueur.strategie == "D":
+      D += 1
+  print("Strategie A : ",A/N*100,"%")
+  print("Strategie B : ",B/N*100,"%")
+  print("Strategie C : ",C/N*100,"%")
+  print("Strategie D : ",D/N*100,"%")
+  
+Probabilité_Gagnant_pourcentage(5000)
+  
+  
+    
+  
+  
+  
 
-Probabilité_Gagnant(100000)
+
 
   
    
