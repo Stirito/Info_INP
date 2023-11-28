@@ -101,7 +101,7 @@ class Joueur:
         if is_enough:
           return self.jouables[randint(0,len(self.jouables)-1)]
         else:
-          return None
+          return self.jouables[randint(0,len(self.jouables)-1)]
       
     
     elif self.strategie == "D":
@@ -173,10 +173,15 @@ class Joueurs:
     
     if blocage:
      
-      
+      joueurs_minimum_value = []
       for joueur,valeur in K.items():
         if valeur == min(K.values()):
-          return joueur
+          joueurs_minimum_value.append(joueur)
+      
+      if len(joueurs_minimum_value) == 1:
+        return joueurs_minimum_value[0]
+      else:
+        return "Partie Nulle"
     return None
     
           
@@ -239,13 +244,15 @@ class JeuDeDominos:
     
     
     self.joueurs.tour = self.joueurs.listejoueurs[0] 
+    z = len(self.ListeDominos)//self.joueurs.N
     
+    for joueur in self.joueurs.listejoueurs:
+      while len(joueur.main) != z:
+        domino = self.ListeDominos[randint(0,len(self.ListeDominos)-1)]
+        if domino not in deja_distribue:
+          joueur.main.append(domino)
+          deja_distribue.append(domino)
     
-    while JeuDeDominos.ListeDominos != []:
-      dominos_a_distribuer = JeuDeDominos.ListeDominos[randint(0,len(JeuDeDominos.ListeDominos)-1)]
-      self.joueurs.tour.main.append(dominos_a_distribuer)
-      self.joueurs.PasserTour()
-      deja_distribue.append(dominos_a_distribuer)
           
   def PartieFinie(self,n1,n2):
     for joueur in self.joueurs.listejoueurs:
@@ -254,10 +261,15 @@ class JeuDeDominos:
         self.DesignerVainqueur(joueur)
         return True
     
+    
     j = self.joueurs.TrouverMeilleurMain(n1,n2)
     if j != None:
       
       self.DesignerVainqueur(j)
+      return True
+    
+    elif j == "Partie Nulle":
+      self.DesignerVainqueur("Partie Nulle")
       return True
     else:
       return False
@@ -269,6 +281,9 @@ class JeuDeDominos:
   def LancerPartie(self):
     
     self.Distribuer()
+    
+    for joueur in self.joueurs.listejoueurs:
+      print(joueur.AfficherMain())
     first_domino = self.joueurs.CommencerPartie()
     
     n1 = first_domino.A
@@ -286,7 +301,10 @@ class JeuDeDominos:
       dernier_domino = self.plateau[len(self.plateau)-1]
       n1 = premier_domino.A
       n2 = dernier_domino.B
-    print("Le vainqueur est ",self.joueurs.Vainqueur.nom)
+    if self.joueurs.Vainqueur == "Partie Nulle":
+      print("Partie Nulle")
+    else:
+      print("Le vainqueur est ",self.joueurs.Vainqueur.nom)
 
 
 def Probabilité_Gagnant_pourcentage(N):
@@ -294,23 +312,29 @@ def Probabilité_Gagnant_pourcentage(N):
   B = 0
   C = 0
   D = 0
+  PNULLE = 0
   for i in range(N):
     jeu = JeuDeDominos()
     jeu.LancerPartie()
-    if jeu.joueurs.Vainqueur.strategie == "A":
-      A += 1
-    elif jeu.joueurs.Vainqueur.strategie == "B":
-      B += 1
-    elif jeu.joueurs.Vainqueur.strategie == "C":
-      C += 1
-    elif jeu.joueurs.Vainqueur.strategie == "D":
-      D += 1
+    if not jeu.joueurs.Vainqueur == "Partie Nulle":
+      if jeu.joueurs.Vainqueur.strategie == "A":
+        A += 1
+      elif jeu.joueurs.Vainqueur.strategie == "B":
+        B += 1
+      elif jeu.joueurs.Vainqueur.strategie == "C":
+        C += 1
+      elif jeu.joueurs.Vainqueur.strategie == "D":
+        D += 1
+    else:
+      PNULLE += 1
+    
   print("Strategie A : ",A/N*100,"%")
   print("Strategie B : ",B/N*100,"%")
   print("Strategie C : ",C/N*100,"%")
   print("Strategie D : ",D/N*100,"%")
+  print("Partie Nulle : ",PNULLE/N*100,"%")
   
-Probabilité_Gagnant_pourcentage(5000)
+Probabilité_Gagnant_pourcentage(1000)
   
   
     

@@ -1,5 +1,11 @@
 from random import uniform,randint
 
+
+longueur,largeur = 600,600
+diametre = 20
+rayon = diametre/2
+
+
 class Vecteur:
     def __init__(self,x,y):
         self.x = x
@@ -42,13 +48,13 @@ class Balle:
         
     def Rebondir(self):
         
-        if width <= self.centre.x+20:
+        if self.centre.x-rayon <= 0:
             self.vinst = Vecteur(-self.vinst.x,self.vinst.y)
-        elif self.centre.x+20 <= 20:
+        elif longueur < self.centre.x+rayon :
             self.vinst = Vecteur(-self.vinst.x,self.vinst.y)
-        elif height <= self.centre.y+20:
+        elif largeur <= self.centre.y+rayon :
             self.vinst = Vecteur(self.vinst.x,-self.vinst.y)
-        elif self.centre.y+20  <= 20:
+        elif self.centre.y-rayon <= 0:
             self.vinst = Vecteur(self.vinst.x,-self.vinst.y)
 
 class ListeBalles:
@@ -57,7 +63,7 @@ class ListeBalles:
         self.vmin = vmin
         self.vmax = vmax
         
-        self.liste_balle = []
+        self.liste_balle = [Balle(Point(randint(0,longueur),randint(0,largeur)),Vecteur(randint(vmin,vmax),randint(vmin,vmax))) for i in range(n)]
         
 
         
@@ -69,18 +75,22 @@ class ListeBalles:
             balle.Rebondir()
     def EntrerCollision(self):
         for balle in self.liste_balle:
+            print(balle)
             for balle2 in self.liste_balle:
-                
+                print("2",balle)
                 if not balle == balle2:
-            
-                    if balle.centre.Distance(balle.centre,balle2.centre) < 40:
+                    balle
+                    o1_o2 = balle.centre.Vect().Soust(balle2.centre.Vect())
+                    vnorm = o1_o2 / o1_o2.Norm()
+                    if balle.centre.Distance(balle.centre,balle2.centre) <= 2*rayon:
                         print("Collision")
                         balle.col = color(random(255),random(255),random(255))
-                        balle.vinst = balle.vinst.Mult(-1)
+                        balle.vinst = balle.vinst - ((balle.vinst.Soust(balle2.vinst).Scal(vnorm)))
+                        balle2.vinst = balle2.vinst - ((balle2.vinst.Soust(balle.vinst).Scal(vnorm)))
                 
 
-c = Point(250,250)
-t = ListeBalles(randint(100,101),20,30)
+
+t = ListeBalles(randint(3,5),4,6)
 
           
 def setup():
@@ -88,13 +98,11 @@ def setup():
 
     size(600,600)
     smooth()
+    frameRate(30)
     background(249,216,143)
     fill(255)
     stroke(249,216,143)
-    for i in range(t.n):
-    
-        balle = Balle(Point(randint(0,width),randint(0,height)),Vecteur(uniform(-1,1),uniform(-1,1)))
-        t.liste_balle.append(balle)
+
 def draw():
     background(249,216,143)
     t.Animer()
