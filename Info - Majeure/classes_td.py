@@ -152,8 +152,7 @@ class Joueurs:
     else:
       prochain = 0
     self.tour = self.listejoueurs[prochain]
-  #TODO : Boucle infini (Si tous les joueurs sont C et qu'il n'y a pas de double)
-  #TODO : Si joueur ont la meme somme
+ 
   def TrouverMeilleurMain(self,n1,n2):
     j = 0
     K = {}
@@ -182,7 +181,7 @@ class Joueurs:
         return joueurs_minimum_value[0]
       else:
         return "Partie Nulle"
-    return None
+  
     
           
 class JeuDeDominos:
