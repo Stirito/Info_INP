@@ -153,6 +153,7 @@ class Joueurs:
       prochain = 0
     self.tour = self.listejoueurs[prochain]
   #TODO : Boucle infini (Si tous les joueurs sont C et qu'il n'y a pas de double)
+  #TODO : Si joueur ont la meme somme
   def TrouverMeilleurMain(self,n1,n2):
     j = 0
     K = {}
@@ -184,9 +185,7 @@ class JeuDeDominos:
   def __init__(self):
     self.joueurs = Joueurs(randint(2,4))
     self.plateau = []
-  
-  #! A revoir Problème sur self.tour str alors qu'il doit etre un joueur#
-  #TODO : Probleme quand on rajoute au debut extrelite n1 a revoir
+
   def PoserPlateau(self,domino):
   
     
@@ -238,18 +237,15 @@ class JeuDeDominos:
   def Distribuer(self):
     deja_distribue = []
     
-    z = 0
-    if self.joueurs.N == 2:
-      z = 7
-    elif self.joueurs.N == 3 or self.joueurs.N == 4:
-      z = 6
-      
-    for joueur in self.joueurs.listejoueurs:
-      while len(joueur.main) < z:
-        domino = JeuDeDominos.ListeDominos[randint(0,27)]
-        if domino not in deja_distribue:
-          joueur.main.append(domino)
-          deja_distribue.append(domino)
+    
+    self.joueurs.tour = self.joueurs.listejoueurs[0] 
+    
+    
+    while JeuDeDominos.ListeDominos != []:
+      dominos_a_distribuer = JeuDeDominos.ListeDominos[randint(0,len(JeuDeDominos.ListeDominos)-1)]
+      self.joueurs.tour.main.append(dominos_a_distribuer)
+      self.joueurs.PasserTour()
+      deja_distribue.append(dominos_a_distribuer)
           
   def PartieFinie(self,n1,n2):
     for joueur in self.joueurs.listejoueurs:
