@@ -1,10 +1,10 @@
-from random import uniform,randint
-from math import sqrt,cos,sin
+from random import randint
+from math import sqrt
 
-longueur,largeur = 800,800
+longueur,largeur = 600,600
 diametre = 20
 rayon = diametre/2
-
+couleur_balle = color(random(128,255),random(128,255),random(128,255))
 
 class Vecteur:
     def __init__(self,x,y):
@@ -39,8 +39,9 @@ class Balle:
     def __init__(self,centre,vinst):
         self.centre = centre
         self.vinst = vinst
-        self.col = color(255,255,255)
+        self.col = couleur_balle
     def Dessiner(self):
+    
         fill(self.col)
         ellipse(self.centre.x,self.centre.y,diametre,diametre)
         
@@ -73,8 +74,8 @@ class ListeBalles:
         
         self.liste_balle = [Balle(Point(randint(0,longueur),randint(0,largeur)),Vecteur(randint(vmin,vmax),randint(vmin,vmax))) for i in range(n)]
         
-        self.liste_balle[randint(0,len(self.liste_balle)-1)].col = color(255,0,0)
-        #Ne pas superposer les balles
+        self.liste_balle[0].col = color(255,0,0)
+    
         for balle in self.liste_balle:
         
             for balle2 in self.liste_balle:
@@ -83,14 +84,11 @@ class ListeBalles:
                         balle.centre = Point(randint(0,longueur),randint(0,largeur))
                         balle2.centre = Point(randint(0,longueur),randint(0,largeur))
 
-        #[Balle(Point(300,300),Vecteur(0,3)),Balle(Point(300,400),Vecteur(0,-3))]
-        #[Balle(Point(300,300),Vecteur(3,0)),Balle(Point(400,300),Vecteur(-3,0))]
-        
-        #[Balle(Point(300,300),Vecteur(3,3)),Balle(Point(366,366),Vecteur(-3,-3))]
-        #[Balle(Point(randint(0,longueur),randint(0,largeur)),Vecteur(randint(vmin,vmax),randint(vmin,vmax))) for i in range(n)]
+
         
     def Animer(self):
         for balle in self.liste_balle:
+            
             balle.Deplacer()
             balle.Dessiner()
             balle.Rebondir()
@@ -103,7 +101,7 @@ class ListeBalles:
                 
                     if dist(balle.centre.x,balle.centre.y,balle2.centre.x,balle2.centre.y) < 2*rayon:
                 
-                    #Changer de decaler boule
+                
                         
                     
                    
@@ -118,7 +116,7 @@ class ListeBalles:
                         ecart = n.Mult(diametre).Soust(o1o2)
                    
                         
-                        balle.centre = balle.centre.Translater(ecart.Mult(1))
+                        balle.centre = balle.centre.Translater(ecart)
                         
                         
                         
@@ -137,8 +135,8 @@ class ListeBalles:
 
 
 t = ListeBalles(randint(100,101),3,4)
-debut = 1
-jeu_stop = False
+
+
 def setup():
 
 
@@ -150,21 +148,14 @@ def setup():
 
 
 def draw():
-    c = debut - millis()//1000
     background(0,0,0)
 
     t.Animer()
     t.EntrerCollision()
-    if c >= 0:
-    
-        fill(0,255,0)
-        textSize(128)
-        
-        text(str(c),longueur//2,largeur//2)
-        textAlign(CENTER)
+
     
     
-    print(millis()//1000,c,jeu_stop)
+    
     
     
     
