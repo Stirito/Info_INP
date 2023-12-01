@@ -2,7 +2,7 @@ from random import uniform,randint
 from math import sqrt,cos,sin
 
 longueur,largeur = 800,800
-diametre = 10
+diametre = 20
 rayon = diametre/2
 
 
@@ -98,16 +98,14 @@ class ListeBalles:
         for balle in self.liste_balle:
             
             for balle2 in self.liste_balle:
-           
-                if not balle == balle2:
-                    d =balle.centre.Distance(balle.centre,balle2.centre)
-                    
+
+                if balle != balle2:
+                
                     if dist(balle.centre.x,balle.centre.y,balle2.centre.x,balle2.centre.y) < 2*rayon:
-                    
-                        #Changer de decaler boule
+                
+                    #Changer de decaler boule
                         
-                        balle.col = color(random(255),random(255),random(255))
-                        balle2.col = color(random(255),random(255),random(255))
+                    
                    
                         o1o2 = balle.centre.Vect(balle2.centre,balle.centre)
                         
@@ -129,40 +127,46 @@ class ListeBalles:
                         
                         b2 = (balle2.vinst.Soust(balle.vinst)).Scal(n)
                         new_v2 = balle2.vinst.Soust(n.Mult(b2))
-                        stroke(balle.col)
-                        line(balle.centre.x,balle.centre.y,new_v1.x*10+balle.centre.x,new_v1.y*10+balle.centre.y)
+              
                         balle.vinst = new_v1
                         balle2.vinst = new_v2
                     
                    
                     
-                        
-           
-                        
-                  
-                    
-                   
-                
 
 
-t = ListeBalles(randint(50,51),3,4)
 
-          
+t = ListeBalles(randint(100,101),3,4)
+debut = 1
+jeu_stop = False
 def setup():
 
 
     size(longueur,largeur)
     smooth()
-    frameRate(120)
+    frameRate(90)
     background(0,0,0)
-    fill(255)
-    stroke(249,216,143)
+    
+
 
 def draw():
+    c = debut - millis()//1000
     background(0,0,0)
+
     t.Animer()
     t.EntrerCollision()
-
+    if c >= 0:
+    
+        fill(0,255,0)
+        textSize(128)
+        
+        text(str(c),longueur//2,largeur//2)
+        textAlign(CENTER)
+    
+    
+    print(millis()//1000,c,jeu_stop)
+    
+    
     
     
     
