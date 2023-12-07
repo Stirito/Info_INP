@@ -152,9 +152,29 @@ def LancerPartie(N):
     return L
 
 class Jeu_TicTacToe:
-    def __init__(self,nom="TICTACTOE",joueurs=[],plateau=[[],[],[]],vainqueur=None,note=0):
+    def __init__(self,nom="TICTACTOE",joueurs=[],plateau=[["","",""],["","",""],["","",""]],vainqueur=None,note=0):
         self.nom = nom
         self.joueurs = joueurs
         self.plateau = plateau
         self.vainqueur = vainqueur
         self.note = note
+    def getInfo(self):
+        return (self.nom,self.joueurs,self.plateau,self.vainqueur,self.note)
+    def Afficher(self):
+        for i in range(len(self.plateau)):
+            print(self.plateau[i])
+      
+        
+    def getJoueur(self):
+        return self.joueurs[0]
+    def getPartieFinie(self):
+        for line in self.plateau:
+            for case in line:
+                if case == "":
+                    return False
+    def setVainqueur(self,joueur):
+        self.vainqueur = joueur
+    def Passer(self):
+        self.joueurs = [self.joueurs[1],self.joueurs[0]]
+    def getSituationsSuivantes(self):
+        return
