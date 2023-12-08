@@ -136,7 +136,7 @@ class Jeu:
         
         
 J = Jeu("NIM",[Joueur("Bob","PROGRAMME"),Joueur("Benoit","HUMAIN")],15)
-J.Jouer()
+
 
 def LancerPartie(N):
     L = []
@@ -168,13 +168,202 @@ class Jeu_TicTacToe:
     def getJoueur(self):
         return self.joueurs[0]
     def getPartieFinie(self):
-        for line in self.plateau:
-            for case in line:
-                if case == "":
-                    return False
+        if self.Check_all("O") or self.Check_all("X"):
+            return True
+        else:
+            for i in range(len(self.plateau)):
+                for j in range(len(self.plateau[i])):
+                    if self.plateau[i][j] == "":
+                        return False
+        
     def setVainqueur(self,joueur):
         self.vainqueur = joueur
     def Passer(self):
         self.joueurs = [self.joueurs[1],self.joueurs[0]]
     def getSituationsSuivantes(self):
-        return
+        liste_situation = []
+        if self.getPartieFinie() == False:
+            for i in range(len(self.plateau)):
+                for j in range(len(self.plateau[i])):
+                    if self.plateau[i][j] == "":
+                        
+                        copie_plateau = [line.copy() for line in self.plateau]
+                        if self.joueurs[0].nature == "HUMAIN":
+                            copie_plateau[i][j] = "X"
+                        elif self.joueurs[0].nature == "PROGRAMME":
+                            copie_plateau[i][j] = "O"
+                        
+                            
+                        liste_situation.append(Jeu_TicTacToe(self.nom,self.joueurs[::-1],copie_plateau))
+        
+        if liste_situation:
+            return liste_situation
+        else:
+            return [self]
+    def Max(self,liste_situation):
+        
+        m =max([situation.note for situation in liste_situation])
+        for s in liste_situation:
+            if s.note == m:
+                return s
+    def Min(self,liste_situation):
+       
+        
+        m =min([situation.note for situation in liste_situation])
+        for s in liste_situation:
+            if s.note == m:
+                return s
+    def Eval(self):
+        if self.Check_all("X"):
+          
+           
+            self.note = -1
+        elif self.Check_all("O"):
+         
+           
+            self.note = 1
+        elif not self.Check_all("O") and not self.Check_all("X") and self.getPartieFinie():
+            
+            self.note = 0
+    def minMax(self):
+        tous_les_plateaux_evaluer = []
+        if self.getPartieFinie() == False:
+            situsuiv = self.getSituationsSuivantes()
+            for situation in situsuiv:
+                if situation.getPartieFinie():
+                    
+                    situation.Afficher()
+                    print("Note : ",self.note)
+                    tous_les_plateaux_evaluer.append(situation.plateau)
+                    return self.Eval()
+                else:   
+                    if situation.plateau not in tous_les_plateaux_evaluer:
+                        print("ded")
+                        situation.minMax()
+        
+            
+            if self.joueurs[0].nature == "HUMAIN":
+               
+                self.note = self.Min(situsuiv).note
+                return self.Min(situsuiv)
+            elif self.joueurs[0].nature == "PROGRAMME":
+                
+                self.note = self.Max(situsuiv).note
+                return self.Max(situsuiv)
+        else:
+            self.Eval()
+            return self
+    
+        
+        
+        
+    
+    def Jouer(self):
+        
+        while not self.getPartieFinie():
+            self.Afficher()
+            print("Tour de ",self.joueurs[0].nature)
+            
+            if self.joueurs[0].nature == "HUMAIN":
+                print("Choisissez une ligne")
+                ligne = int(input())
+                print("Choisissez une colonne")
+                colonne = int(input())
+                self.plateau[ligne][colonne] = "X"
+            elif self.joueurs[0].nature == "PROGRAMME":
+                p = self.minMax()
+                self.plateau = p.plateau
+            self.Passer()
+        if self.Check_all("X"):
+            self.setVainqueur("X")
+        elif self.Check_all("O"):
+            self.setVainqueur("O")
+        elif not self.Check_all("O") and not self.Check_all("X"):
+            self.setVainqueur("Partie nulle")
+        print(self.vainqueur," a gagne la partie")
+    def Check_all(self,signe):
+        return self.Check_colonne(signe) or self.Check_line(signe) or self.Check_Diago(signe)       
+    def Check_line(self,signe):
+        #Check ligne
+        for line in self.plateau:
+            if line == [signe]*3:
+                return True
+        return False
+        #Check colonne
+    def Check_colonne(self,signe):
+        t = 0
+        for i in range(len(self.plateau)):
+            nb_colonne_bonne = 0
+            
+            for j in range(len(self.plateau[i])):
+                case = self.plateau[j][t]    
+                if case == signe:
+                    nb_colonne_bonne+=1
+            if nb_colonne_bonne == 3:
+                return True  
+            t+=1  
+        return False
+    
+    def Check_Diago(self,signe):
+        
+        nb_colonne = 0
+        for i in range(len(self.plateau)):
+            case = self.plateau[i][i]
+            if case == signe:
+                nb_colonne+=1
+        
+        nb_colonne2 = 0
+        t = len(self.plateau)
+        for i in range(len(self.plateau)):
+            t-=1
+            case = self.plateau[i][t]
+            if case == signe:
+                nb_colonne2+=1    
+            
+        
+        if nb_colonne == 3 or nb_colonne2 == 3:
+            return True
+                
+        return False
+            
+matrice = [
+    ["O", "", ""],
+    ["", "", ""],
+    ["", "", ""]
+]   
+
+matrice_gagnante_O = [
+    ["O", "X", "O"],
+    ["X", "O", ""],
+    ["O", "O", "X"]
+]
+
+matrice_gagnante_X = [
+    ["O", "", "O"],
+    ["X", "X", "X"],
+    ["O", "", "X"]
+]
+
+matrice_partie_nulle = [
+    ["O", "X", "O"],
+    ["X", "O", "X"],
+    ["X", "O", "X"]
+]
+
+JT_gagnant_O = Jeu_TicTacToe("TICTACTOE", [Joueur("Bob", "PROGRAMME"), Joueur("Benoit", "HUMAIN")], matrice_gagnante_O)
+JT_gagnant_X = Jeu_TicTacToe("TICTACTOE", [Joueur("Bob", "PROGRAMME"), Joueur("Benoit", "HUMAIN")], matrice_gagnante_X)
+JT_partie_nulle = Jeu_TicTacToe("TICTACTOE", [Joueur("Bob", "PROGRAMME"), Joueur("Benoit", "HUMAIN")], matrice_partie_nulle)
+
+
+
+JT = Jeu_TicTacToe("TICTACTOE",[Joueur("Bob","PROGRAMME"),Joueur("Benoit","HUMAIN")])
+
+JT.minMax()
+
+
+
+
+
+
+    
+
