@@ -142,7 +142,7 @@ def setup():
 
     size(longueur,largeur)
     smooth()
-    frameRate(90)
+    frameRate(60)
     background(0,0,0)
     
 
